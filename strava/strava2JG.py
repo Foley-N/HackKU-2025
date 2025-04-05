@@ -61,12 +61,10 @@ def new_token():
     
     
 
-def get_activity(access_token, afterTime, beforeTime):
+
 def get_activity(access_token, afterTime, beforeTime):
     headers = {'Authorization': f'Bearer {access_token}'}
     params = {
-    "after": afterTime,
-    "before": beforeTime
     "after": afterTime,
     "before": beforeTime
     }
@@ -82,6 +80,6 @@ def json_parse():
     with open("strava/runResponse.json", "r") as file:
         data = json.load(file)
         #print(data)
-        print(data["name"])
+        print(data)
 
 json_parse()
