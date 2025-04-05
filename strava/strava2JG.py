@@ -1,7 +1,7 @@
 import os
 import base64
 import json
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 import time
 from dotenv import load_dotenv
 from requests import post, get
@@ -38,18 +38,15 @@ def new_token():
     try:
         json_result = response.json()
         print("Token Response:", json_result)
-        # get twoDays ago and dayAgo datetime variables
-        year = int(datetime.now().year)
-        month = int(datetime.now().month)
-        day = int(datetime.now().day)
-        twoDaysAgo = datetime(year, month, day-2, 0, 0, 0)
-        oneDayAgo = datetime(year, month, day-1, 0, 0, 0)
+        #Get time from 30 minutes ago and now
+        nowUTC = datetime.now(timezone.utc)
+        thirtyMinutesAgo = nowUTC - timedelta(minutes=1)
 
         # convert to unix epoch timestamp
-        twoDaysAgoTS = twoDaysAgo.timestamp()
-        oneDayAgoTS = oneDayAgo.timestamp()
+        afterTimeStamp = int(thirtyMinutesAgo.timestamp())
+        beforeTimeStamp = int(nowUTC.timestamp())
 
-        activites = get_activity(json_result["access_token"], twoDaysAgoTS, oneDayAgoTS)
+        activites = get_activity(json_result["access_token"], afterTimeStamp, beforeTimeStamp)
         return 0
     except json.JSONDecodeError:
         print("Error parsing JSON response")
@@ -57,11 +54,11 @@ def new_token():
     
     
 
-def get_activity(access_token, twoDaysAgo, oneDayAgo):
+def get_activity(access_token, afterTime, beforeTime):
     headers = {'Authorization': f'Bearer {access_token}'}
     params = {
-    "before": "{oneDayAgo}",
-    "after": "{twoDaysAgo}"
+    "after": afterTime,
+    "before": beforeTime
     }
     test_url = "https://www.strava.com/api/v3/athlete/activities"
     response = get(test_url, headers=headers, params=params)
