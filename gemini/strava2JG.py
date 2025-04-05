@@ -15,6 +15,14 @@ client_id = os.getenv('client_id')
 client_secret = os.getenv('client_secret')
 authorization_code = os.getenv('refresh_token')  # Store code in .env
 
+def load_env():
+    load_dotenv()
+    client_id = os.getenv('client_id')
+    client_secret = os.getenv('client_secret')
+    authorization_code = os.getenv('refresh_token')  # Store code in .env
+    return client_id, client_secret, authorization_code
+
+
 def new_tokenJSON():
     # Prepare data for POST request
     data = {
@@ -125,4 +133,4 @@ def repeatedFunction():
       threading.Timer(30, repeatedFunction).start()
 
 
-repeatedFunction()
+#repeatedFunction()
