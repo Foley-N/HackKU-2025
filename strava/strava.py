@@ -35,4 +35,4 @@ def get_activity():
     print(json_result)
     return json_result
 
-get_activity()
+get_activity()  
