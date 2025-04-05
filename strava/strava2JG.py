@@ -69,4 +69,12 @@ def get_activity(access_token, twoDaysAgo, oneDayAgo):
     print("jsonResponse:", json_result)
     return json_result
 
-new_token()
+#new_token()
+
+def json_parse():
+    with open("strava/runResponse.json", "r") as file:
+        data = json.load(file)
+        #print(data)
+        print(data["name"])
+
+json_parse()
