@@ -13,7 +13,7 @@ import threading
 load_dotenv()
 client_id = os.getenv('client_id')
 client_secret = os.getenv('client_secret')
-authorization_code = os.getenv('refresh_token')  # Store code in .env
+authorization_code = os.getenv('refresh_token')
 
 def load_env():
     load_dotenv()
@@ -56,6 +56,7 @@ def getRequest(json_result):
      # convert to unix epoch timestamp
     afterTimeStamp = int(thirtyMinutesAgo.timestamp())
     beforeTimeStamp = int(nowUTC.timestamp())
+
 
     activites = get_activity(json_result["access_token"], afterTimeStamp, beforeTimeStamp)
 
@@ -133,4 +134,4 @@ def repeatedFunction():
       threading.Timer(30, repeatedFunction).start()
 
 
-#repeatedFunction()
+repeatedFunction()
