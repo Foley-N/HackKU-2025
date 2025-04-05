@@ -2,6 +2,7 @@ import os
 import base64
 import json
 from datetime import datetime, timezone, timedelta
+from datetime import datetime, timezone, timedelta
 import time
 from dotenv import load_dotenv
 from requests import post, get
@@ -41,11 +42,17 @@ def new_token():
         #Get time from 30 minutes ago and now
         nowUTC = datetime.now(timezone.utc)
         thirtyMinutesAgo = nowUTC - timedelta(minutes=1)
+        #Get time from 30 minutes ago and now
+        nowUTC = datetime.now(timezone.utc)
+        thirtyMinutesAgo = nowUTC - timedelta(minutes=1)
 
         # convert to unix epoch timestamp
         afterTimeStamp = int(thirtyMinutesAgo.timestamp())
         beforeTimeStamp = int(nowUTC.timestamp())
+        afterTimeStamp = int(thirtyMinutesAgo.timestamp())
+        beforeTimeStamp = int(nowUTC.timestamp())
 
+        activites = get_activity(json_result["access_token"], afterTimeStamp, beforeTimeStamp)
         activites = get_activity(json_result["access_token"], afterTimeStamp, beforeTimeStamp)
         return 0
     except json.JSONDecodeError:
@@ -55,8 +62,11 @@ def new_token():
     
 
 def get_activity(access_token, afterTime, beforeTime):
+def get_activity(access_token, afterTime, beforeTime):
     headers = {'Authorization': f'Bearer {access_token}'}
     params = {
+    "after": afterTime,
+    "before": beforeTime
     "after": afterTime,
     "before": beforeTime
     }
