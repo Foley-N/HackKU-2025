@@ -9,10 +9,13 @@ interface Props {
 
 function ListGroup({ items, heading, onSelectItem }: Props) {
   //Hook
-  const [selectedIndex, setSelectedIndex] = useState(-1);
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
 
   //Event handler
-  //const handleClick = (event: MouseEvent) => console.log(event);
+  const handleClick = (item: string, index: number) => {
+    setSelectedIndex(index === selectedIndex ? null : index);
+    onSelectItem(item);
+  }
 
   return (
     <>
@@ -27,12 +30,14 @@ function ListGroup({ items, heading, onSelectItem }: Props) {
                 : "list-group-item"
             }
             key={item}
-            onClick={() => {
-              setSelectedIndex(index);
-              onSelectItem(item);
-            }}
+            onClick={() => handleClick(item, index)}
           >
             {item}
+            {selectedIndex === index && (
+              <div className="additional-content mt-2">
+                <p>This is additional content for {item}.</p>
+              </div>
+            )}
           </li>
         ))}
       </ul>

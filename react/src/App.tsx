@@ -47,7 +47,7 @@ const App: React.FC=() => {
       {/* {alertVisible && (
         <div className="alert alert-primary mt-3"> */}
       <div className="alert alert-primary mt-3">
-        <ListGroup items={items} heading="Activities" onSelectItem={handleSelectItem}/>
+        <ListGroup items={items} heading="Activities Today" onSelectItem={handleSelectItem}/>
         <ListGroup items={items} heading="Screentime" onSelectItem={handleSelectItem}/>
       </div>
 
