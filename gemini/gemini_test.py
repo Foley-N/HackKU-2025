@@ -38,19 +38,18 @@ def prompt_builder():
 
     prompt = f"use this json file {json} to build a prompt for building a recovery plan based on the activity type, distance ran, elapsed time, and average heart rate. along with this also suggest any healthy snacks or meals to better help the user recover."
     response = client.models.generate_content(
-        model = "gemini-2.0-flash-thinking-exp", 
+        model = "gemini-2.0-flash", 
         contents=prompt
     )
 
-    print(response)
-    return(response)
+    print(response.text)
+    return(response.text)
 
 def post_run_suggestion():
-
     prompt = prompt_builder()
 
     suggestion = client.models.generate_content(
-        model="gemini-2.0-flash-thinking-exp",
+        model="gemini-2.0-flash",
         contents=prompt
     )
     print(suggestion.text)
