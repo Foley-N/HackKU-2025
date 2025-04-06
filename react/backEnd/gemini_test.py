@@ -4,6 +4,8 @@ import os
 import json
 from requests import post, get
 from datetime import datetime, timezone, timedelta
+import sys
+
 
 ###############################################################################
 # Enviroment variables
@@ -155,5 +157,10 @@ def get_activity(access_token, afterTime, beforeTime):
 # function calls
 
 #post_run_suggestion()
+action = sys.argv[1]
+if action == 'post_run_suggestion':
+    result = post_run_suggestion()
+elif action == 'goal_setting':
+    result = goal_setting()
 
-goal_setting()
+print(result)

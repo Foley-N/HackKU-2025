@@ -11,6 +11,10 @@ const App: React.FC = () => {
   const [items01, setItems01] = useState<string[]>([]);
   const [items02, setItems02] = useState<string[]>([]);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const [postRunSuggestionOutput, setPostRunSuggestionOutput] =
+    useState<string>("");
+  const [goalSettingOutput, setGoalSettingOutput] = useState<string>("");
+
   type Activity = {
     id: string;
     activityName: string | null;
@@ -35,6 +39,28 @@ const App: React.FC = () => {
     setSelectedIndex(index === selectedIndex ? null : index);
   };
   const [alertVisible, setAlertVisibility] = useState(false);
+
+  const handlePostRunSuggestion = () => {
+    fetch("http://localhost:3001/run-python-script?action=1")
+      .then((res) => res.text())
+      .then((data) => {
+        setPostRunSuggestionOutput(data); 
+      })
+      .catch((error) => {
+        console.error("Error running Python script:", error);
+      });
+  };
+
+  const handleGoalSetting = () => {
+    fetch("http://localhost:3001/run-python-script?action=0")
+      .then((res) => res.text())
+      .then((data) => {
+        setGoalSettingOutput(data);
+      })
+      .catch((error) => {
+        console.error("Error running Python script:", error);
+      });
+  };
 
   useEffect(() => {
     fetch("http://localhost:3001/data")
@@ -142,6 +168,35 @@ const App: React.FC = () => {
         <div className="alert alert-primary mt-3">
           <ListGroups items={items02} heading="Screentime" />
         </div>
+        {/* Button for Post-Run Suggestion */}
+        <div className="mt-3">
+          <button onClick={handlePostRunSuggestion} className="btn btn-primary">
+            Run Post-Run Suggestion
+          </button>
+        </div>
+
+        {/* Display Post-Run Output */}
+        {postRunSuggestionOutput && (
+          <div className="alert alert-info mt-3">
+            <h5>Post-Run Suggestion Output:</h5>
+            <pre>{postRunSuggestionOutput}</pre>
+          </div>
+        )}
+
+        {/* Button for Run Goal Setting */}
+        <div className="mt-3">
+          <button onClick={handleGoalSetting} className="btn btn-primary">
+            Run Goal Setting
+          </button>
+        </div>
+
+        {/* Display Goal Output */}
+        {goalSettingOutput && (
+          <div className="alert alert-info mt-3">
+            <h5>Goal Setting Output:</h5>
+            <pre>{goalSettingOutput}</pre>
+          </div>
+        )}
       </div>
     </div>
   );

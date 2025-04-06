@@ -1,6 +1,7 @@
-const express = require('express');
-const mysql = require('mysql2');
-const cors = require('cors');
+const express = require("express");
+const mysql = require("mysql2");
+const cors = require("cors");
+const { execFile } = require("child_process");
 
 const app = express();
 const port = 3001;
@@ -9,18 +10,18 @@ app.use(cors());
 app.use(express.json());
 
 const db = mysql.createConnection({
-  host: '10.104.61.47',
-  user: 'project_user',
-  password: 'yourStrongPassword',
-  database: 'dbHackKU'
+  host: "10.104.61.47",
+  user: "project_user",
+  password: "yourStrongPassword",
+  database: "dbHackKU",
 });
 
-db.connect(err => {
+db.connect((err) => {
   if (err) throw err;
-  console.log('Connected to MySQL');
+  console.log("Connected to MySQL");
 });
 
-app.get('/data', (req, res) => {
+app.get("/data", (req, res) => {
   const query = `
     SELECT * 
     FROM activities
@@ -37,7 +38,7 @@ app.get('/data', (req, res) => {
   });
 });
 
-app.get('/wellbeing', (req, res) => {
+app.get("/wellbeing", (req, res) => {
   const query = `SELECT * FROM DigitalWellbeing`;
 
   db.query(query, (err, results) => {
@@ -48,18 +49,38 @@ app.get('/wellbeing', (req, res) => {
   });
 });
 
+app.get("/run-python-script", (req, res) => {
+  const action = req.query.action;
 
-app.get('/run-python', (req, res) => {
-  execFile('python3', ['my_script.py'], (error, stdout, stderr) => {
-    if (error) {
-      console.error('Python error:', error);
-      return res.status(500).send('Python script failed');
+  if (!action) {
+    return res.status(400).send("Action is required");
+  }
+  const scriptArgument =
+    action === "1"
+      ? "post_run_suggestion"
+      : action === "0"
+      ? "goal_setting"
+      : "";
+
+  if (!scriptArgument) {
+    return res.status(400).send("Unknown action");
+  }
+
+  execFile(
+    "python",
+    [
+      "C:\\Users\\50vjt\\OneDrive\\문서\\GitHub\\HackKU-2025\\react\\backEnd\\gemini_test.py",
+      scriptArgument,
+    ],
+    (error, stdout, stderr) => {
+      if (error) {
+        console.error("Python error:", error);
+        return res.status(500).send(`Python script failed: ${stderr}`);
+      }
+      res.send(stdout); // Return the Python script output
     }
-    res.send(`Python output: ${stdout}`);
-  });
+  );
 });
-
-
 
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);
