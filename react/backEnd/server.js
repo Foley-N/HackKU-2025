@@ -20,7 +20,6 @@ db.connect(err => {
   console.log('Connected to MySQL');
 });
 app.get('/data', (req, res) => {
-  // Modified query to fetch activities for specific dates
   const query = `
     SELECT * 
     FROM activities
