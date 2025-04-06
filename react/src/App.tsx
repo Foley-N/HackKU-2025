@@ -126,7 +126,7 @@ const App: React.FC = () => {
           onSelectItem={handleSelectItem}
         />
 
-        {/* 선택된 항목에 해당하는 데이터만 출력 */}
+        
         {selectedIndex !== null && (
           <div className="p-4">
             <div className="p-3 rounded shadow border">
@@ -140,15 +140,15 @@ const App: React.FC = () => {
               </div>
               <div>
                 <strong>Distance:</strong>{" "}
-                {Activities[selectedIndex].activityDistance ?? "N/A"}
+                {Activities[selectedIndex].activityDistance ?? "N/A"} meters
               </div>
               <div>
                 <strong>Elapsed Time:</strong>{" "}
-                {Activities[selectedIndex].activityElapsedTime ?? "N/A"}
+                {Activities[selectedIndex].activityElapsedTime ?? "N/A"} seconds
               </div>
               <div>
                 <strong>Elevation Gain:</strong>{" "}
-                {Activities[selectedIndex].activityElevationGain ?? "N/A"}
+                {Activities[selectedIndex].activityElevationGain ?? "N/A"} meters
               </div>
               <div>
                 <strong>Start Time:</strong>{" "}
@@ -156,11 +156,11 @@ const App: React.FC = () => {
               </div>
               <div>
                 <strong>Avg Speed:</strong>{" "}
-                {Activities[selectedIndex].activityAverageSpeed ?? "N/A"}
+                {Activities[selectedIndex].activityAverageSpeed ?? "N/A"} 
               </div>
               <div>
                 <strong>Avg HR:</strong>{" "}
-                {Activities[selectedIndex].activityAverageHR ?? "N/A"}
+                {Activities[selectedIndex].activityAverageHR ?? "N/A"} bpm
               </div>
             </div>
           </div>
