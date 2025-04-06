@@ -3,11 +3,13 @@ import Main from "./components/Main";
 import Button from "./components/Button";
 import ListGroup from "./components/ListGroup";
 import { JSX } from "react/jsx-runtime";
+import ListGroups from "./components/ListGroups";
 
 const App: React.FC = () => {
   const [Activities, setActivities] = useState<Activity[]>([]);
+  const [Wellbeing, setWellbeing] = useState<Wellbeing[]>([]);
   const [items01, setItems01] = useState<string[]>([]);
-  let items02 = ["New York", "San Francisco", "Tokyo", "London", "Paris"];
+  const [items02, setItems02] = useState<string[]>([]);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   type Activity = {
     id: string;
@@ -19,6 +21,15 @@ const App: React.FC = () => {
     activityStartTime: string | null;
     activityAverageSpeed: string | null;
     activityAverageHR: string | null;
+  };
+
+  type Wellbeing = {
+    id: string;
+    deviceName: string | null;
+    timeUsage: string | null;
+    timeGoal: string | null;
+    dateUsage: string | null;
+    mostUsedApp: string | null;
   };
   const handleSelectItem = (index: number) => {
     setSelectedIndex(index === selectedIndex ? null : index);
@@ -45,6 +56,26 @@ const App: React.FC = () => {
   }, []);
 
   useEffect(() => {
+    fetch("http://localhost:3001/wellbeing")
+      .then((res) => res.json())
+      .then((data: Wellbeing[]) => {
+        setWellbeing(data);
+
+        const dynamicItems = data.map((wellbeing) => [
+          `Device Name: ${wellbeing.deviceName}`,
+          `Time Usage: ${wellbeing.timeUsage} mins`,
+          `Time Goal: ${wellbeing.timeGoal} mins`,
+          `Date Usage: ${wellbeing.dateUsage}`,
+          `Most Used App: ${wellbeing.mostUsedApp}`,
+        ]);
+        setItems02(dynamicItems.flat());
+      })
+      .catch((err) => {
+        console.error("Failed to fetch wellbeing data:", err);
+      });
+  }, []);
+
+  useEffect(() => {
     fetch("http://localhost:3001/data")
       .then((res) => res.json())
       .then((data: Activity[]) => {
@@ -58,7 +89,6 @@ const App: React.FC = () => {
     setSelectedIndex(index === selectedIndex ? null : index);
   };
 
-  
   return (
     <div className="App">
       <Main />
@@ -109,12 +139,9 @@ const App: React.FC = () => {
             </div>
           </div>
         )}
-
-        <ListGroup
-          items={items02}
-          heading="Screentime"
-          onSelectItem={handleSelectItem}
-        />
+        <div className="alert alert-primary mt-3">
+          <ListGroups items={items02} heading="Screentime" />
+        </div>
       </div>
     </div>
   );
