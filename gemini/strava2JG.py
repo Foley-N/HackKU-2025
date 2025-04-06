@@ -5,7 +5,6 @@ from datetime import datetime, timezone, timedelta
 import time
 from dotenv import load_dotenv
 from requests import post, get
-from datetime import date, timedelta
 import mysql.connector
 import threading
 
@@ -14,28 +13,35 @@ load_dotenv()
 client_id = os.getenv('client_id')
 client_secret = os.getenv('client_secret')
 authorization_code = os.getenv('refresh_token')
+host = os.getenv('host')
+user = os.getenv('user')
+password = os.getenv('password')
+database = os.getenv('database')
+
+
+
 
 def load_env():
     load_dotenv()
     client_id = os.getenv('client_id')
     client_secret = os.getenv('client_secret')
     authorization_code = os.getenv('refresh_token')  # Store code in .env
+
+
     return client_id, client_secret, authorization_code
 
-
+# Function retrieves json with tokens
 def new_tokenJSON():
-    # Prepare data for POST request
     data = {
         'client_id': client_id,
         'client_secret': client_secret,
         'refresh_token': authorization_code,
         'grant_type': 'refresh_token'
     }
-    
-    # Make the POST request
+
     response = post("https://www.strava.com/api/v3/oauth/token", data=data)
     
-    # Check for HTTP errors
+    # Checking for HTTP errors
     #print(f"Status Code: {response.status_code}")
     #print(f"Response Text: {response.text}")
     
@@ -48,13 +54,14 @@ def new_tokenJSON():
         print("Error parsing JSON response")
         return None
     
+# Function sets values for getRequest
 def getRequest(json_result):
-    #Get time from 30 minutes ago and now
+    #Get time from 7 days ago and now
     nowUTC = datetime.now(timezone.utc)
-    thirtyMinutesAgo = nowUTC - timedelta(days=2)
+    sevenDaysAgo = nowUTC - timedelta(days=7)
 
      # convert to unix epoch timestamp
-    afterTimeStamp = int(thirtyMinutesAgo.timestamp())
+    afterTimeStamp = int(sevenDaysAgo.timestamp())
     beforeTimeStamp = int(nowUTC.timestamp())
 
 
@@ -62,7 +69,7 @@ def getRequest(json_result):
 
     return activites 
     
-
+# Function sends getRequest 
 def get_activity(access_token, afterTime, beforeTime):
     headers = {'Authorization': f'Bearer {access_token}'}
     params = {
@@ -80,10 +87,10 @@ def updateDatabase(jsonActivities):
 
     # Connecting to db
     mydb = mysql.connector.connect(
-      host="10.104.61.47",
-      user="project_user",
-      password="yourStrongPassword",
-      database="dbHackKU"
+      host= host,
+      user= user,
+      password= password,
+      database= database
     )
 
     cursor = mydb.cursor()
@@ -120,18 +127,19 @@ def updateDatabase(jsonActivities):
     return "New entries: "
 
 
+# Function runs python file
 def checkDatabase():
     now = datetime.now()
-    print("Executing Code at!: " + str(now))
+    print("Executing Code at: " + str(now))
     jsonResult = new_tokenJSON()
     jsonActivities = getRequest(jsonResult)
     #print(f"Activities in the last 5 mins: {jsonActivities}")
     updateDatabase(jsonActivities)
     print("Executed Code!")
 
+# Function runs every 15 seconds
 def repeatedFunction():
       checkDatabase()
-      threading.Timer(30, repeatedFunction).start()
-
+      threading.Timer(15, repeatedFunction).start()
 
 repeatedFunction()
