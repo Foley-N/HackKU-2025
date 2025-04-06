@@ -1,21 +1,13 @@
-import { useState } from "react";
+import { FC } from "react";
 
 interface Props {
   items: string[];
   heading: string;
   // (item: string) => void
-  onSelectItem: (item: string) => void;
+  onSelectItem: (index: number) => void;
 }
 
-function ListGroup({ items, heading, onSelectItem }: Props) {
-  //Hook
-  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
-
-  //Event handler
-  const handleClick = (item: string, index: number) => {
-    setSelectedIndex(index === selectedIndex ? null : index);
-    onSelectItem(item);
-  }
+const ListGroup: FC<Props> = ({ items, heading, onSelectItem }) => {
 
   return (
     <>
@@ -24,20 +16,11 @@ function ListGroup({ items, heading, onSelectItem }: Props) {
       <ul className="list-group">
         {items.map((item, index) => (
           <li
-            className={
-              selectedIndex === index
-                ? "list-group-item active"
-                : "list-group-item"
-            }
-            key={item}
-            onClick={() => handleClick(item, index)}
+            className="list-group-item"
+            key={index}
+            onClick={() => onSelectItem(index)}
           >
             {item}
-            {selectedIndex === index && (
-              <div className="additional-content mt-2">
-                <p>This is additional content for {item}.</p>
-              </div>
-            )}
           </li>
         ))}
       </ul>

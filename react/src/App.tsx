@@ -1,12 +1,14 @@
-import React,{useEffect, useState } from "react";
-import Main from './components/Main';
+import React, { useEffect, useState } from "react";
+import Main from "./components/Main";
 import Button from "./components/Button";
-import ListGroup from './components/ListGroup';
+import ListGroup from "./components/ListGroup";
 import { JSX } from "react/jsx-runtime";
 
-const App: React.FC=() => {
-  const[Activities, setActivities] = useState<Activity[]>([]);
-  let items = ["New York", "San Francisco", "Tokyo", "London", "Paris"];
+const App: React.FC = () => {
+  const [Activities, setActivities] = useState<Activity[]>([]);
+  const [items01, setItems01] = useState<string[]>([]);
+  let items02 = ["New York", "San Francisco", "Tokyo", "London", "Paris"];
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   type Activity = {
     id: string;
     activityName: string | null;
@@ -18,59 +20,104 @@ const App: React.FC=() => {
     activityAverageSpeed: string | null;
     activityAverageHR: string | null;
   };
-  const handleSelectItem = (item: string) => {
-     console.log(item);
-    }
-  const [alertVisible, setAlertVisibility ]=useState(false);
+  const handleSelectItem = (index: number) => {
+    setSelectedIndex(index === selectedIndex ? null : index);
+  };
+  const [alertVisible, setAlertVisibility] = useState(false);
 
   useEffect(() => {
-    fetch('http://localhost:3001/data')
+    fetch("http://localhost:3001/data")
+      .then((res) => res.json())
+      .then((data: Activity[]) => {
+        setActivities(data);
+
+        const dynamicItems = data.map(
+          (activity) =>
+            `${"Name: " + activity.activityName} | ${
+              "Start Time: " + activity.activityStartTime
+            }`
+        );
+        setItems01(dynamicItems);
+      })
+      .catch((err) => {
+        console.error("Failed to fetch activities:", err);
+      });
+  }, []);
+
+  useEffect(() => {
+    fetch("http://localhost:3001/data")
       .then((res) => res.json())
       .then((data: Activity[]) => {
         setActivities(data);
       })
       .catch((err) => {
-        console.error('Failed to fetch activities:', err);
+        console.error("Failed to fetch activities:", err);
       });
   }, []);
+  const handleClick = (item: string, index: number) => {
+    setSelectedIndex(index === selectedIndex ? null : index);
+  };
 
-  return(
+  
+  return (
     <div className="App">
       <Main />
-      {/* <div className="d-flex justify-content-center mt-3">
-        <Button color="primary" onClick={() =>setAlertVisibility(true)}>
-          Strat
-        </Button>
-      </div> */}
 
-
-      {/* {alertVisible && (
-        <div className="alert alert-primary mt-3"> */}
       <div className="alert alert-primary mt-3">
-        <ListGroup items={items} heading="Activities Today" onSelectItem={handleSelectItem}/>
-        <ListGroup items={items} heading="Screentime" onSelectItem={handleSelectItem}/>
-      </div>
+        <ListGroup
+          items={items01}
+          heading="Activities Today"
+          onSelectItem={handleSelectItem}
+        />
 
-      <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4">Activities</h1>
-      <ul className="space-y-2">
-        {Activities.map((activity) => (
-          <li key={activity.id} className="p-3 rounded shadow border">
-            <div><strong>Name:</strong> {activity.activityName ?? 'N/A'}</div>
-            <div><strong>Type:</strong> {activity.activityType ?? 'N/A'}</div>
-            <div><strong>Distance:</strong> {activity.activityDistance ?? 'N/A'}</div>
-            <div><strong>Elapsed Time:</strong> {activity.activityElapsedTime ?? 'N/A'}</div>
-            <div><strong>Elevation Gain:</strong> {activity.activityElevationGain ?? 'N/A'}</div>
-            <div><strong>Start Time:</strong> {activity.activityStartTime ?? 'N/A'}</div>
-            <div><strong>Avg Speed:</strong> {activity.activityAverageSpeed ?? 'N/A'}</div>
-            <div><strong>Avg HR:</strong> {activity.activityAverageHR ?? 'N/A'}</div>
-          </li>
-        ))}
-      </ul>
-    </div>
-      
+        {/* 선택된 항목에 해당하는 데이터만 출력 */}
+        {selectedIndex !== null && (
+          <div className="p-4">
+            <div className="p-3 rounded shadow border">
+              <div>
+                <strong>Name:</strong>{" "}
+                {Activities[selectedIndex].activityName ?? "N/A"}
+              </div>
+              <div>
+                <strong>Type:</strong>{" "}
+                {Activities[selectedIndex].activityType ?? "N/A"}
+              </div>
+              <div>
+                <strong>Distance:</strong>{" "}
+                {Activities[selectedIndex].activityDistance ?? "N/A"}
+              </div>
+              <div>
+                <strong>Elapsed Time:</strong>{" "}
+                {Activities[selectedIndex].activityElapsedTime ?? "N/A"}
+              </div>
+              <div>
+                <strong>Elevation Gain:</strong>{" "}
+                {Activities[selectedIndex].activityElevationGain ?? "N/A"}
+              </div>
+              <div>
+                <strong>Start Time:</strong>{" "}
+                {Activities[selectedIndex].activityStartTime ?? "N/A"}
+              </div>
+              <div>
+                <strong>Avg Speed:</strong>{" "}
+                {Activities[selectedIndex].activityAverageSpeed ?? "N/A"}
+              </div>
+              <div>
+                <strong>Avg HR:</strong>{" "}
+                {Activities[selectedIndex].activityAverageHR ?? "N/A"}
+              </div>
+            </div>
+          </div>
+        )}
+
+        <ListGroup
+          items={items02}
+          heading="Screentime"
+          onSelectItem={handleSelectItem}
+        />
+      </div>
     </div>
   );
-}
+};
 
 export default App;
